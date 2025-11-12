@@ -1,7 +1,10 @@
 import redis
 import json
+import logging
 import threading
 from typing import Optional, Callable
+
+logger = logging.getLogger(__name__)
 
 
 class RedisClient:
@@ -132,6 +135,7 @@ class RedisClient:
     def _listen(self):
         """Internal method to listen for messages"""
         try:
+            logger.info('Started listening for Redis pub/sub messages')
             for message in self.pubsub.listen():
                 if not self.is_listening:
                     break
@@ -139,13 +143,18 @@ class RedisClient:
                 if message['type'] == 'message':
                     try:
                         data = json.loads(message['data'])
+                        logger.debug(f'Received message on channel {message["channel"]}: {data}')
                         if self.message_callback:
                             self.message_callback(message['channel'], data)
                     except json.JSONDecodeError:
                         # If message is not JSON, send as string
+                        logger.debug(f'Received non-JSON message on channel {message["channel"]}: {message["data"]}')
                         if self.message_callback:
                             self.message_callback(message['channel'], message['data'])
         except Exception as e:
+            logger.error(f'Error in Redis pub/sub listener: {e}')
             if self.message_callback:
                 self.message_callback('_error', {'error': str(e)})
+        finally:
+            logger.info('Stopped listening for Redis pub/sub messages')
 

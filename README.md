@@ -42,14 +42,27 @@ A modern, user-friendly web application for interacting with Redis pub/sub messa
    pip install -r requirements.txt
    ```
 
-3. **Ensure Redis server is running** (if using local Redis):
+3. **Configure environment variables** (optional):
+   ```bash
+   cp .env.example .env
+   # Edit .env file with your configuration
+   ```
+   
+   The `.env` file supports the following variables:
+   - `FLASK_DEBUG`: Set to `False` for production (default: `True`)
+   - `HOST`: Server host (default: `0.0.0.0`)
+   - `PORT`: Server port (default: `5000`)
+   - `SECRET_KEY`: Flask secret key (change in production)
+   - `LOG_LEVEL`: Logging level - DEBUG, INFO, WARNING, ERROR (default: `INFO`)
+
+4. **Ensure Redis server is running** (if using local Redis):
    ```bash
    redis-server
    ```
 
 ## Usage
 
-### Starting the Application
+### Development Mode
 
 1. **Run the Flask application**:
    ```bash
@@ -60,6 +73,84 @@ A modern, user-friendly web application for interacting with Redis pub/sub messa
    ```
    http://localhost:5000
    ```
+
+### Production Deployment
+
+**Important**: The Flask development server is not suitable for production. Use a production WSGI server like Gunicorn.
+
+#### Using Gunicorn (Recommended)
+
+1. **Install dependencies** (if not already installed):
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Run with Gunicorn**:
+   ```bash
+   gunicorn --worker-class gevent --worker-connections 1000 -w 1 --bind 0.0.0.0:5000 app:app
+   ```
+
+   Options:
+   - `--worker-class gevent`: Required for Flask-SocketIO WebSocket support (gevent is more compatible than eventlet)
+   - `--worker-connections 1000`: Maximum number of simultaneous connections per worker
+   - `-w 1`: Number of worker processes (1 is recommended for SocketIO)
+   - `--bind 0.0.0.0:5000`: Host and port to bind to
+   - `app:app`: Flask application instance
+
+   **Alternative**: If you prefer eventlet (may have compatibility issues with Python 3.13+):
+   ```bash
+   gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:5000 app:app
+   ```
+
+3. **For production, you may also want to**:
+   - Set environment variables:
+     ```bash
+     export FLASK_DEBUG=False
+     export PORT=5000
+     ```
+   - Use a reverse proxy (nginx) in front of Gunicorn
+   - Set up process management (systemd, supervisor, etc.)
+   - Configure SSL/TLS certificates
+
+#### Production Configuration
+
+Create a `gunicorn_config.py` file for advanced configuration:
+
+```python
+bind = "0.0.0.0:5000"
+workers = 1
+worker_class = "gevent"
+worker_connections = 1000
+timeout = 30
+keepalive = 2
+```
+
+Then run:
+```bash
+gunicorn -c gunicorn_config.py app:app
+```
+
+#### Using with Nginx (Reverse Proxy)
+
+Example Nginx configuration:
+
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
 
 ### Connecting to Redis
 
@@ -130,6 +221,8 @@ redis_app/
 ├── redis_client.py        # Redis connection and pub/sub manager
 ├── requirements.txt       # Python dependencies
 ├── README.md             # This file
+├── .env.example          # Example environment variables file
+├── .gitignore            # Git ignore file
 ├── static/
 │   ├── css/
 │   │   └── style.css     # VS Code dark theme styling
@@ -141,7 +234,24 @@ redis_app/
 
 ## Configuration
 
-All Redis connection settings are configured through the web interface. No configuration files or environment variables are required.
+### Application Configuration
+
+Application settings can be configured via environment variables in a `.env` file:
+
+- `FLASK_DEBUG`: Enable/disable debug mode (default: `True`)
+- `HOST`: Server host address (default: `0.0.0.0`)
+- `PORT`: Server port number (default: `5000`)
+- `SECRET_KEY`: Flask secret key for sessions (change in production)
+- `LOG_LEVEL`: Logging level - DEBUG, INFO, WARNING, ERROR (default: `INFO`)
+
+Copy `.env.example` to `.env` and modify as needed:
+```bash
+cp .env.example .env
+```
+
+### Redis Configuration
+
+All Redis connection settings are configured through the web interface. No configuration files or environment variables are required for Redis connection details.
 
 ## Features in Detail
 
@@ -192,23 +302,46 @@ All Redis connection settings are configured through the web interface. No confi
 
 ### Running in Debug Mode
 
-The application runs in debug mode by default. To disable:
+The application runs in debug mode by default when using `python app.py`. 
 
-```python
-# In app.py, change:
-socketio.run(app, debug=True, host='0.0.0.0', port=5000)
-# To:
-socketio.run(app, debug=False, host='0.0.0.0', port=5000)
+To disable debug mode:
+```bash
+export FLASK_DEBUG=False
+python app.py
 ```
 
 ### Custom Port
 
 To run on a different port:
 
-```python
-# In app.py, change the port:
-socketio.run(app, debug=True, host='0.0.0.0', port=8080)
+```bash
+export PORT=8080
+python app.py
 ```
+
+Or with Gunicorn:
+```bash
+gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:8080 app:app
+```
+
+### Environment Variables
+
+All environment variables can be set in the `.env` file:
+
+- `FLASK_DEBUG`: Set to `False` for production (default: `True`)
+- `HOST`: Host address to bind to (default: `0.0.0.0`)
+- `PORT`: Port number to bind to (default: `5000`)
+- `SECRET_KEY`: Flask secret key (change in production)
+- `LOG_LEVEL`: Logging level - DEBUG, INFO, WARNING, ERROR (default: `INFO`)
+
+### Logging
+
+The application uses Python's logging module. Logs are output to the console with timestamps and log levels. You can control the verbosity using the `LOG_LEVEL` environment variable:
+
+- `DEBUG`: Detailed information for debugging
+- `INFO`: General informational messages (default)
+- `WARNING`: Warning messages
+- `ERROR`: Error messages only
 
 ## License
 
