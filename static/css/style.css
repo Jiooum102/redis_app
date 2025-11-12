@@ -15,6 +15,9 @@ body {
 .container {
     max-width: 1200px;
     margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0;
 }
 
 header {
@@ -67,10 +70,15 @@ header h1 {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .connection-section {
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    flex-shrink: 0;
 }
 
 .connection-form-columns {
@@ -86,23 +94,43 @@ header h1 {
     gap: 15px;
 }
 
-.left-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    flex: 0 0 33.333%;
-    min-width: 0;
-}
-
-.messages-section {
-    flex: 0 0 66.666%;
-    min-width: 0;
-}
-
 .second-row {
     display: flex;
     gap: 20px;
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    align-items: flex-start;
+}
+
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 0 0 30%;
+    min-width: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    align-self: stretch;
+}
+
+.left-panel .card {
+    width: 100%;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.messages-section {
+    flex: 0 0 70%;
+    min-width: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
 }
 
 .card {
@@ -111,6 +139,10 @@ header h1 {
     padding: 25px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     border: 1px solid #3e3e42;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
 }
 
 .card h2 {
@@ -412,9 +444,7 @@ button[type="submit"]:not(:disabled):hover,
     background: rgba(255, 255, 255, 0.4);
 }
 
-.messages-section {
-    grid-column: 1 / -1;
-}
+/* .messages-section grid-column removed - now using flex layout */
 
 .messages-controls {
     display: flex;
@@ -429,7 +459,8 @@ button[type="submit"]:not(:disabled):hover,
 }
 
 .messages-container {
-    max-height: 500px;
+    flex: 1;
+    min-height: 400px;
     overflow-y: auto;
     border: 1px solid #3e3e42;
     border-radius: 5px;
