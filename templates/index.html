@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redis Pub/Sub Web App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Redis Pub/Sub Web Application</h1>
+            <div class="connection-status" id="connectionStatus">
+                <span class="status-indicator" id="statusIndicator"></span>
+                <span id="statusText">Not Connected</span>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Redis Connection Section -->
+            <section class="card">
+                <h2>Redis Connection</h2>
+                <form id="redisConnectionForm">
+                    <div class="form-group">
+                        <label for="redisHost">Host:</label>
+                        <input type="text" id="redisHost" name="host" value="localhost" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="redisPort">Port:</label>
+                        <input type="number" id="redisPort" name="port" value="6379" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="redisPassword">Password:</label>
+                        <input type="password" id="redisPassword" name="password" placeholder="Leave empty if no password">
+                    </div>
+                    <div class="form-group">
+                        <label for="redisDb">Database:</label>
+                        <input type="number" id="redisDb" name="db" value="0" min="0" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" id="connectBtn">Connect</button>
+                        <button type="button" id="disconnectBtn" disabled>Disconnect</button>
+                    </div>
+                </form>
+                <div id="connectionMessage" class="message"></div>
+            </section>
+
+            <!-- Subscribe Section -->
+            <section class="card">
+                <h2>Subscribe to Channel</h2>
+                <div class="form-group">
+                    <label for="subscribeChannel">Channel Name:</label>
+                    <div class="input-group">
+                        <input type="text" id="subscribeChannel" placeholder="Enter channel name">
+                        <button type="button" id="subscribeBtn" disabled>Subscribe</button>
+                    </div>
+                </div>
+                <div id="subscribedChannels" class="channels-list">
+                    <p>No active subscriptions</p>
+                </div>
+                <div id="subscribeMessage" class="message"></div>
+            </section>
+
+            <!-- Publish Section -->
+            <section class="card">
+                <h2>Publish Message</h2>
+                <form id="publishForm">
+                    <div class="form-group">
+                        <label for="publishChannel">Channel Name:</label>
+                        <div class="channel-select-group">
+                            <select id="channelSelector" disabled>
+                                <option value="">Select from subscribed channels...</option>
+                            </select>
+                            <span class="channel-selector-divider">or</span>
+                            <input type="text" id="publishChannel" placeholder="Enter channel name" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>JSON Message:</label>
+                        <div id="jsonFieldsContainer" class="json-fields-container">
+                            <div class="json-field-row">
+                                <input type="text" class="json-key" placeholder="Key" />
+                                <input type="text" class="json-value" placeholder="Value" />
+                                <button type="button" class="remove-field-btn" onclick="removeJsonField(this)" disabled>×</button>
+                            </div>
+                        </div>
+                        <button type="button" id="addFieldBtn" class="add-field-btn" disabled>+ Add Field</button>
+                    </div>
+                    <button type="submit" id="publishBtn" disabled>Publish</button>
+                </form>
+                <div id="publishResultMessage" class="message"></div>
+            </section>
+
+            <!-- Messages Display Section -->
+            <section class="card messages-section">
+                <h2>Messages</h2>
+                <div class="messages-controls">
+                    <button type="button" id="clearHistoryBtn">Clear History</button>
+                    <span id="messageCount">0 messages</span>
+                </div>
+                <div id="messagesContainer" class="messages-container">
+                    <p class="empty-message">No messages yet. Connect to Redis and start publishing or subscribing.</p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
+
