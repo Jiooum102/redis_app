@@ -64,9 +64,45 @@ header h1 {
 }
 
 .main-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 20px;
+}
+
+.connection-section {
+    width: 100%;
+}
+
+.connection-form-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.connection-form-column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 0 0 33.333%;
+    min-width: 0;
+}
+
+.messages-section {
+    flex: 0 0 66.666%;
+    min-width: 0;
+}
+
+.second-row {
+    display: flex;
+    gap: 20px;
+    width: 100%;
 }
 
 .card {
@@ -501,8 +537,20 @@ button[type="submit"]:not(:disabled):hover,
 }
 
 @media (max-width: 768px) {
-    .main-content {
+    .connection-form-columns {
         grid-template-columns: 1fr;
+    }
+    
+    .second-row {
+        flex-direction: column;
+    }
+    
+    .left-panel {
+        flex: 1 1 100%;
+    }
+    
+    .messages-section {
+        flex: 1 1 100%;
     }
     
     header {

@@ -18,25 +18,31 @@
         </header>
 
         <div class="main-content">
-            <!-- Redis Connection Section -->
-            <section class="card">
+            <!-- First Row: Redis Connection Section -->
+            <section class="card connection-section">
                 <h2>Redis Connection</h2>
-                <form id="redisConnectionForm">
-                    <div class="form-group">
-                        <label for="redisHost">Host:</label>
-                        <input type="text" id="redisHost" name="host" value="localhost" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="redisPort">Port:</label>
-                        <input type="number" id="redisPort" name="port" value="6379" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="redisPassword">Password:</label>
-                        <input type="password" id="redisPassword" name="password" placeholder="Leave empty if no password">
-                    </div>
-                    <div class="form-group">
-                        <label for="redisDb">Database:</label>
-                        <input type="number" id="redisDb" name="db" value="0" min="0" required>
+                <form id="redisConnectionForm" class="connection-form">
+                    <div class="connection-form-columns">
+                        <div class="connection-form-column">
+                            <div class="form-group">
+                                <label for="redisHost">Host:</label>
+                                <input type="text" id="redisHost" name="host" value="localhost" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="redisPort">Port:</label>
+                                <input type="number" id="redisPort" name="port" value="6379" required>
+                            </div>
+                        </div>
+                        <div class="connection-form-column">
+                            <div class="form-group">
+                                <label for="redisPassword">Password:</label>
+                                <input type="password" id="redisPassword" name="password" placeholder="Leave empty if no password">
+                            </div>
+                            <div class="form-group">
+                                <label for="redisDb">Database:</label>
+                                <input type="number" id="redisDb" name="db" value="0" min="0" required>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-actions">
                         <button type="submit" id="connectBtn">Connect</button>
@@ -46,53 +52,57 @@
                 <div id="connectionMessage" class="message"></div>
             </section>
 
-            <!-- Subscribe Section -->
-            <section class="card">
-                <h2>Subscribe to Channel</h2>
-                <div class="form-group">
-                    <label for="subscribeChannel">Channel Name:</label>
-                    <div class="input-group">
-                        <input type="text" id="subscribeChannel" placeholder="Enter channel name">
-                        <button type="button" id="subscribeBtn" disabled>Subscribe</button>
-                    </div>
-                </div>
-                <div id="subscribedChannels" class="channels-list">
-                    <p>No active subscriptions</p>
-                </div>
-                <div id="subscribeMessage" class="message"></div>
-            </section>
-
-            <!-- Publish Section -->
-            <section class="card">
-                <h2>Publish Message</h2>
-                <form id="publishForm">
+            <!-- Second Row: Left Side (1/3) - Subscribe and Publish -->
+            <div class="second-row">
+            <div class="left-panel">
+                <!-- Subscribe Section -->
+                <section class="card">
+                    <h2>Subscribe to Channel</h2>
                     <div class="form-group">
-                        <label for="publishChannel">Channel Name:</label>
-                        <div class="channel-select-group">
-                            <select id="channelSelector" disabled>
-                                <option value="">Select from subscribed channels...</option>
-                            </select>
-                            <span class="channel-selector-divider">or</span>
-                            <input type="text" id="publishChannel" placeholder="Enter channel name" required>
+                        <label for="subscribeChannel">Channel Name:</label>
+                        <div class="input-group">
+                            <input type="text" id="subscribeChannel" placeholder="Enter channel name">
+                            <button type="button" id="subscribeBtn" disabled>Subscribe</button>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>JSON Message:</label>
-                        <div id="jsonFieldsContainer" class="json-fields-container">
-                            <div class="json-field-row">
-                                <input type="text" class="json-key" placeholder="Key" />
-                                <input type="text" class="json-value" placeholder="Value" />
-                                <button type="button" class="remove-field-btn" onclick="removeJsonField(this)" disabled>×</button>
+                    <div id="subscribedChannels" class="channels-list">
+                        <p>No active subscriptions</p>
+                    </div>
+                    <div id="subscribeMessage" class="message"></div>
+                </section>
+
+                <!-- Publish Section -->
+                <section class="card">
+                    <h2>Publish Message</h2>
+                    <form id="publishForm">
+                        <div class="form-group">
+                            <label for="publishChannel">Channel Name:</label>
+                            <div class="channel-select-group">
+                                <select id="channelSelector" disabled>
+                                    <option value="">Select from subscribed channels...</option>
+                                </select>
+                                <span class="channel-selector-divider">or</span>
+                                <input type="text" id="publishChannel" placeholder="Enter channel name" required>
                             </div>
                         </div>
-                        <button type="button" id="addFieldBtn" class="add-field-btn" disabled>+ Add Field</button>
-                    </div>
-                    <button type="submit" id="publishBtn" disabled>Publish</button>
-                </form>
-                <div id="publishResultMessage" class="message"></div>
-            </section>
+                        <div class="form-group">
+                            <label>JSON Message:</label>
+                            <div id="jsonFieldsContainer" class="json-fields-container">
+                                <div class="json-field-row">
+                                    <input type="text" class="json-key" placeholder="Key" />
+                                    <input type="text" class="json-value" placeholder="Value" />
+                                    <button type="button" class="remove-field-btn" onclick="removeJsonField(this)" disabled>×</button>
+                                </div>
+                            </div>
+                            <button type="button" id="addFieldBtn" class="add-field-btn" disabled>+ Add Field</button>
+                        </div>
+                        <button type="submit" id="publishBtn" disabled>Publish</button>
+                    </form>
+                    <div id="publishResultMessage" class="message"></div>
+                </section>
+            </div>
 
-            <!-- Messages Display Section -->
+            <!-- Second Row: Right Side (2/3) - Messages Display Section -->
             <section class="card messages-section">
                 <h2>Messages</h2>
                 <div class="messages-controls">
@@ -103,6 +113,7 @@
                     <p class="empty-message">No messages yet. Connect to Redis and start publishing or subscribing.</p>
                 </div>
             </section>
+            </div>
         </div>
     </div>
 
