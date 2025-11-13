@@ -104,31 +104,16 @@ header h1 {
     align-items: flex-start;
 }
 
-.left-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    flex: 0 0 30%;
+.second-row .card {
+    flex: 1 1 50%;
     min-width: 0;
     box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    align-self: stretch;
-}
-
-.left-panel .card {
-    width: 100%;
-    margin: 0;
-    flex-shrink: 0;
 }
 
 .messages-section {
-    flex: 0 0 70%;
-    min-width: 0;
+    width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    align-self: stretch;
     display: flex;
     flex-direction: column;
 }
@@ -576,11 +561,7 @@ button[type="submit"]:not(:disabled):hover,
         flex-direction: column;
     }
     
-    .left-panel {
-        flex: 1 1 100%;
-    }
-    
-    .messages-section {
+    .second-row .card {
         flex: 1 1 100%;
     }
     
